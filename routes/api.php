@@ -22,4 +22,6 @@ Route::group(['prefix' => 'v1/customer'], function () {
     Route::post('/mobile-verify', [CustomerController::class, 'mobileVerifyRequest']);
     Route::post('/email-verify', [CustomerController::class, 'emailVerifyRequest']);
     Route::post('/register', [CustomerController::class, 'register']);
+    Route::post('/login', [CustomerController::class, 'login']);
+    Route::post('/verified', [CustomerController::class, 'verified']);
 });

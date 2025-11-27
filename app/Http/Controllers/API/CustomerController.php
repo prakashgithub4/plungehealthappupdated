@@ -14,6 +14,7 @@ use App\Http\Requests\Customer\MobileVerifiedRequest;
 use App\Http\Requests\Customer\EmailVerifiedRequest;
 use App\Http\Requests\Customer\RegisterRequest;
 use App\Http\Resources\Customer\CustomerResource;
+use App\Http\Requests\Customer\LoginRequest;
 use App\Models\Customer;
 
 class CustomerController extends Controller
@@ -109,5 +110,25 @@ class CustomerController extends Controller
         } catch (\Throwable $e) {
             return $this->errorResponse('Something went wrong.', 500);
         }
+    }
+    public function login(LoginRequest $request)
+    {
+        $customer = Customer::where('phone_number', $request->phone)
+            ->first();
+
+        if (!$customer) {
+            return $this->errorResponse('Invalid credentials.', 401);
+        }
+        $customer->otp = rand(100000, 999999);
+        $customer->save();
+        return $this->successResponse(['otp' => $customer->otp], 'Otp has been sent successfully to your phone number.');
+    }
+    public function verified(MobileVerifiedRequest $request){
+        $customer = Customer::where('phone_number', $request->phone)
+            ->where('otp', $request->otp)->first();
+        if(!$customer){
+            return $this->errorResponse('Invalid OTP.', 400);
+        }
+        return $this->successResponse(new CustomerResource($customer), 'Customer verified successfully.');
     }
 }
