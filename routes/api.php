@@ -25,3 +25,8 @@ Route::group(['prefix' => 'v1/customer'], function () {
     Route::post('/login', [CustomerController::class, 'login']);
     Route::post('/verified', [CustomerController::class, 'verified']);
 });
+Route::middleware('auth:api')->group(function () {
+    Route::get('/profile', function (Request $request) {
+        return response()->json(['message' => 'Authenticated access to customer profile.'], 200);
+    });
+});
