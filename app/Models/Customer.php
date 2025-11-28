@@ -12,6 +12,7 @@ class Customer  extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
     use HasFactory;
     protected $table =  'customers';
+    protected $appends = ['avatar'];
     protected $fillable = [
         'first_name',
         'last_name',
@@ -25,5 +26,16 @@ class Customer  extends Authenticatable
         'gender_id',
         'email_verified_at',
         'mobile_verified',
+        'latitude',
+        'longitude',
+        'marketing_emails'
     ];
+    public function getAvatarAttribute()
+    {
+        if ($this->profile_image_url) {
+            return url('uploads/profile_images/' . $this->profile_image_url);
+        } else {
+            return null;
+        }
+    }
 }

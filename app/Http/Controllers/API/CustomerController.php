@@ -123,12 +123,40 @@ class CustomerController extends Controller
         $customer->save();
         return $this->successResponse(['otp' => $customer->otp], 'Otp has been sent successfully to your phone number.');
     }
-    public function verified(MobileVerifiedRequest $request){
+    public function verified(MobileVerifiedRequest $request)
+    {
         $customer = Customer::where('phone_number', $request->phone)
             ->where('otp', $request->otp)->first();
-        if(!$customer){
+        if (!$customer) {
             return $this->errorResponse('Invalid OTP.', 400);
         }
         return $this->successResponse(new CustomerResource($customer), 'Customer verified successfully.');
     }
+    public function profilePhoto(Request $request)
+    {
+        $request->validate([
+            'profile_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $customer = auth()->user();
+
+        if ($request->hasFile('profile_image')) {
+
+            $image = $request->file('profile_image');
+
+            // Generate image name only
+            $imageName = time() . '_' . $image->getClientOriginalName();
+
+            // Move image to public/profile_images folder
+            $image->move(public_path('uploads/profile_images'), $imageName);
+
+            // Store only the image name in DB
+            $customer->profile_image_url = $imageName;
+
+            $customer->save();
+        }
+
+        return $this->successResponse(['avatar' => $customer->avatar],'Profile image uploaded successfully.');
+    }
+    
 }

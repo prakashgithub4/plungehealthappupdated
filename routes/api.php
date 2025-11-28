@@ -14,6 +14,7 @@ use App\Http\Controllers\API\CustomerController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
 Route::get('v1/genders', [\App\Http\Controllers\API\GenderController::class, 'index']);
 
 Route::group(['prefix' => 'v1/customer'], function () {
@@ -24,9 +25,15 @@ Route::group(['prefix' => 'v1/customer'], function () {
     Route::post('/register', [CustomerController::class, 'register']);
     Route::post('/login', [CustomerController::class, 'login']);
     Route::post('/verified', [CustomerController::class, 'verified']);
+    Route::post('/profile-photo', [CustomerController::class, 'profilePhoto'])->middleware('auth:api');
 });
-Route::middleware('auth:api')->group(function () {
-    Route::get('/profile', function (Request $request) {
-        return response()->json(['message' => 'Authenticated access to customer profile.'], 200);
-    });
+Route::group([
+    'prefix' => 'v1/labs',
+    'middleware' => 'auth:api'
+], function () {
+
+    Route::get('/', [\App\Http\Controllers\API\LabController::class, 'index']);
+    Route::get('/tests', [\App\Http\Controllers\API\LabController::class, 'getTest']);
+    Route::post('/sti-test-submit', [\App\Http\Controllers\API\LabController::class, 'submitTest']);
+    Route::get('/sti-test-history', [\App\Http\Controllers\API\LabController::class, 'getLabTestHistory']);
 });

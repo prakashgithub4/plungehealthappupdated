@@ -25,6 +25,8 @@ class RegisterRequest extends FormRequest
             'country_code' => 'required|string|max:5',
             'phone_number' => 'required|digits_between:7,15',
             'gender_id'    => 'required',
+            'dob'          => 'required|date',
+            'marketing_emails' => 'sometimes|boolean',
         ];
     }
 
