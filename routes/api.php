@@ -26,6 +26,7 @@ Route::group(['prefix' => 'v1/customer'], function () {
     Route::post('/login', [CustomerController::class, 'login']);
     Route::post('/verified', [CustomerController::class, 'verified']);
     Route::post('/profile-photo', [CustomerController::class, 'profilePhoto'])->middleware('auth:api');
+    Route::get('/subscriptions', [\App\Http\Controllers\API\SubscriptionController::class, 'index']);
 });
 Route::group([
     'prefix' => 'v1/labs',
@@ -36,4 +37,6 @@ Route::group([
     Route::get('/tests', [\App\Http\Controllers\API\LabController::class, 'getTest']);
     Route::post('/sti-test-submit', [\App\Http\Controllers\API\LabController::class, 'submitTest']);
     Route::get('/sti-test-history', [\App\Http\Controllers\API\LabController::class, 'getLabTestHistory']);
+    Route::get('/sti-dashboard', [\App\Http\Controllers\API\LabController::class, 'stiDashboard']);
+    
 });

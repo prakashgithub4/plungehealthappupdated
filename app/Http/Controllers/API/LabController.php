@@ -11,6 +11,8 @@ use App\Http\Requests\Lab\CustomerLabTest;
 use App\Models\LabTestUser;
 use App\Traits\ApiResponseTrait;
 use App\Http\Resources\Lab\CustomerTestHistoryResource;
+use App\Models\Customer;
+use App\Models\StiTestResult;
 
 class LabController extends Controller
 {
@@ -63,5 +65,37 @@ class LabController extends Controller
         ];
 
         return $this->successResponse($result, 'Lab test history fetched successfully.');
+    }
+    public function stiDashboard()
+    {
+
+        $customer = Customer::select(
+            'id',
+            'first_name',
+            'last_name',
+            'profile_image_url',
+            'email',
+            'dob',
+            'city',
+            'gender_id',
+            'email_verified_at',
+            'mobile_verified'
+        )
+            ->with('gender:id,name')
+            ->with([
+                'labTestUsers' => function ($query) {
+                    $query->select('id', 'test_date', 'patient_id', 'customer_id','lab_id');
+                },'labTestUsers.lab'=>function($q){
+                    $q->select('id', 'name');
+                }
+            ])   // Load only id and name from genders table
+            ->where('id', auth()->id())
+            ->first();
+        $testResult = StiTestResult::with('getCustomer')->where('lab_test_user_id', auth()->id())->orderBy('id', 'DESC')->first();
+        $customer->isStiTest = $testResult->outcome;
+
+
+
+        return $this->successResponse($customer, 'STI Dashboard data fetched successfully.');
     }
 }

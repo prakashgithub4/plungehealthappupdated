@@ -38,4 +38,11 @@ class Customer  extends Authenticatable
             return null;
         }
     }
+    public function gender()
+    {
+        return $this->belongsTo(Gender::class);
+    }
+    public function labTestUsers(){
+        return $this->hasMany(LabTestUser::class, 'customer_id','id');
+    }
 }
